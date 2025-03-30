@@ -1,0 +1,63 @@
+{# templates/base.html.twig #}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Undefined{% endblock %} — pStatus</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body class="text-dark-100 min-h-screen">
+        <header class="py-6 px-6 md:px-10">
+            <div class="container mx-auto">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-light text-white tracking-wider glow-text">p<span class="text-accent-500">Status</span></h1>
+                    <nav>
+                        <ul class="flex space-x-8">
+                            <li>
+                                <a href="/" title="Status" class="text-sm font-light text-dark-200 hover:text-white transition-colors nav-link">
+                                    Status
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/history" title="History" class="text-sm font-light text-dark-200 hover:text-white transition-colors nav-link">
+                                    History
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-6 md:px-10 py-8">
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="py-6 px-6 md:px-10">
+            <div class="container mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-xs text-dark-300 mb-4 md:mb-0 font-light">
+                        2025 &copy; All rights reserved. — Code &amp; Design by
+                        <a href="https://redirect.proisy.me/linkedin" title="See it on LinkedIn" target="_blank" class="hover:text-white transition-colors">
+                            Christopher Proisy
+                        </a>
+                        assisted by AI.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="https://redirect.proisy.me/v0/pstatus-design" target="_blank" title="See the design code in v0.dev" class="text-xs text-dark-300 hover:text-white transition-colors font-light">Design Preview</a>
+                        <a href="https://redirect.proisy.me/contact" target="_blank" title="Contact me" rel="external" class="text-xs text-dark-300 hover:text-white transition-colors font-light">
+                            Contact
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,60 @@
+{# templates/default/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}System Status{% endblock %}
+
+{% block body %}
+    <div class="mb-12 text-center">
+        {% set globalStatus = monitors|global_status %}
+        <div class="inline-flex items-center px-6 py-3 rounded-full bg-dark-800/50 backdrop-blur-sm border border-dark-600/50 mb-4">
+            <span class="status-indicator status-{{ globalStatus.status }}"></span>
+            <span class="text-sm font-medium {{ globalStatus.color }}">{{ globalStatus.message }}</span>
+        </div>
+
+        <h2 class="text-3xl font-light text-white mb-2">System Status</h2>
+        <p class="text-dark-200 text-sm">Last updated at <span class="text-dark-100">{{ cacheGenerationDate ? cacheGenerationDate|date('H:i') : 'N/A' }}</span></p>
+    </div>
+
+    <div class="mb-16">
+        <h3 class="text-lg font-light text-white mb-6 border-b border-dark-600/50 pb-2">Services</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for monitor in monitors %}
+                {% set status = monitor.status|default("Unknown")|monitor_status %}
+                {% set type = monitor.type|default(0)|monitor_type %}
+                {% set subType = monitor.sub_type|default(0)|monitor_sub_type %}
+
+
+                <div class="card rounded-xl p-4 flex items-center justify-between border border-dark-600/50 bg-dark-800/50">
+                    <div class="flex items-center">
+                        <a href="{{ monitor.url }}?ref=pstatus" target="_blank" title="See '{{ monitor.friendly_name }}' on Internet">
+                            <span class="font-light text-white">{{ monitor.friendly_name }}</span>
+                        </a>
+                        {% if type %}
+                            {% if subType %}
+                                <span class="ml-3 text-xs text-dark-300 bg-dark-600/50 px-2 py-0.5 rounded-full">
+                                    {% if type is same as(4) %}
+                                        {{ subType }}
+                                    {% else %}
+                                        {{ type }}
+                                    {% endif %}
+                                </span>
+                            {% else %}
+                                <span class="ml-3 text-xs text-dark-300 bg-dark-600/50 px-2 py-0.5 rounded-full">
+                                    {{ type }}
+                                 </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center" title={{ status.label }}>
+                        <span class="status-indicator {{ status.indicator }}"></span>
+                        <span class="text-xs font-medium {{ status.class }}">{{ monitor.all_time_uptime_ratio+0 }}%</span>
+                    </div>
+                </div>
+
+            {% else %}
+                <p class="text-dark-300">No monitors available.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

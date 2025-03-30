@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@theme {
+    --color-dark-100: #c0c0cf;
+    --color-dark-200: #8e8ea0;
+    --color-dark-300: #5c5c6e;
+    --color-dark-400: #3a3a4a;
+    --color-dark-500: #2a2a3a;
+    --color-dark-600: #22222e;
+    --color-dark-700: #1c1c28;
+    --color-dark-800: #16161e;
+    --color-dark-900: #101018;
+    --color-dark-950: #0a0a0f;
+    --color-accent-300: #93c5fd;
+    --color-accent-400: #60a5fa;
+    --color-accent-500: #3b82f6;
+    --color-success-400: #34d399;
+    --color-success-500: #10b981;
+    --color-warning-400: #fbbf24;
+    --color-warning-500: #f59e0b;
+    --color-error-400: #f87171;
+    --color-error-500: #ef4444;
+}
+
+/* CSS by v0.dev <3 with my prompt. with a little edit by me */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #101018;
+    background-image:
+            radial-gradient(circle at 25% 10%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 75% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-offline {
+    background-color: rgb(253 98 98 / 69%);
+    box-shadow: 0 0 10px rgba(148, 163, 184, 0.7);
+}
+
+.status-operational {
+    background-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+}
+
+.status-degraded {
+    background-color: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
+}
+
+.status-outage {
+    background-color: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+}
+
+.card {
+    background: rgba(22, 22, 30, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(60, 60, 80, 0.2);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(60, 60, 80, 0.4);
+}
+
+.glow-text {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: #3b82f6;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.timeline-line {
+    position: absolute;
+    left: 15px;
+    top: 24px;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(60, 60, 80, 0.5) 0%, rgba(60, 60, 80, 0) 100%);
+}
+
+.timeline-dot {
+    position: absolute;
+    left: 11px;
+    top: 24px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+}
+
+.filter-btn {
+    transition: all 0.2s ease;
+}
+
+.filter-btn.active {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
