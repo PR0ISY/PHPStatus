@@ -1,15 +1,25 @@
-{# templates/default/history.html.twig #}
+{# templates/default/incidents.html.twig #}
 
 {% extends 'base.html.twig' %}
 
-{% block title %}History{% endblock %}
+{% block title %}Incidents{% endblock %}
 
 {% block body %}
     <div class="mb-10 text-center">
-        <h2 class="text-3xl font-light text-white mb-2">Incidents History</h2>
-        <p class="text-dark-200 text-sm">View the last 10 incidents...</p>
-        <p class="text-dark-200 text-sm">Last updated at <span class="text-dark-100">{{ cacheGenerationDate ? cacheGenerationDate : 'N/A' }}</span></p>
+        <h2 class="text-3xl font-light text-white mb-2">Incidents</h2>
+        {% if incidents is not empty %}
+            <p class="text-dark-200 text-sm">Last updated at <span class="text-dark-100">{{ cacheGenerationDate ? cacheGenerationDate : 'N/A' }}</span></p>
+        {% endif %}
     </div>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <span class="hidden alert alert-{{ type }}">
+                {{ message }}
+            </span>
+        {% endfor %}
+    {% endfor %}
+
 
     {% if incidents is not empty %}
             {% for incident in incidents %}
@@ -71,12 +81,48 @@
                             </div>
                         </div>
                     {% endif %}
-                {% else %}
-                    <p>Aucun incident trouvé.</p>
                 {% endif %}
             {% endfor %}
-    {% else %}
-        <p>Aucun incident trouvé.</p>
+    {% elseif app.flashes is empty %}
+        <div class="flex flex-col items-center justify-center py-20">
+            <div class="empty-state-icon mb-8">
+                <div class="w-24 h-24 rounded-full bg-success-500/10 flex items-center justify-center pulse">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-success-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-xl font-light text-white mb-3">No incidents found</h3>
+            <p class="text-dark-200 text-center max-w-md mb-8">
+                All systems are operating normally. <br />
+                No incidents were reported during the last audit.
+            </p>
+            <div class="card rounded-xl p-5 max-w-lg w-full">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-full bg-success-500/10 flex items-center justify-center mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-white">Optimum availability</h4>
+                        <p class="text-xs text-dark-200">Our systems maintained 100% availability during this period.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-white">Last verification</h4>
+                        <p class="text-xs text-dark-200">All systems were checked {{ cacheGenerationDate ? cacheGenerationDate : 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endif %}
 
 

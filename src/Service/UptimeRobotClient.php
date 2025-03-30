@@ -53,19 +53,24 @@ class UptimeRobotClient
 
     public function getAllIncidentsWithLogs(): array
     {
-        $incidents = $this->getAllIncidents();
+        $incidents = [];
 
-        foreach ($incidents as &$incident) {
-            $monitorDetails = $this->fetchMonitorDetails($incident['id']);
+        try {
+            $incidents = $this->getAllIncidents();
 
-            if ($monitorDetails && isset($monitorDetails['monitor']['logs'])) {
-                $incident['logs'] = $monitorDetails['monitor']['logs'];
+            foreach ($incidents as &$incident) {
+                $monitorDetails = $this->fetchMonitorDetails($incident['id']);
 
-                $incident['last_log'] = $incident['logs'][0] ?? null;
-            } else {
-                $incident['logs'] = [];
-                $incident['last_log'] = null;
+                if ($monitorDetails && isset($monitorDetails['monitor']['logs'])) {
+                    $incident['logs'] = $monitorDetails['monitor']['logs'];
+                    $incident['last_log'] = $incident['logs'][0] ?? null;
+                } else {
+                    $incident['logs'] = [];
+                    $incident['last_log'] = null;
+                }
             }
+        } catch (\Exception $e) {
+            error_log('Error fetching incidents with logs: ' . $e->getMessage());
         }
 
         return $incidents;
@@ -103,19 +108,5 @@ class UptimeRobotClient
             $this->cacheManager->setCacheGenerationDate($cacheKey . '_date');
             return $data[$dataKey];
         });
-    }
-
-    public function getLastLog(): ?array
-    {
-        if (empty($this->logs)) {
-            return null;
-        }
-
-        return $this->logs[0];
-    }
-
-    public function setLogs(array $logs): void
-    {
-        $this->logs = $logs;
     }
 }

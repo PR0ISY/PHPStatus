@@ -11,8 +11,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StatusController extends AbstractController
 {
-    #[Route('/', name: 'status_homepage')]
-    public function index(
+    #[Route('/status', name: 'status_homepage')]
+    public function status(
         UptimeRobotClient $uptimeClient,
         CacheManager $cacheManager,
         DateFormatter $dateFormatter,
@@ -39,21 +39,20 @@ class StatusController extends AbstractController
         ]);
     }
 
-    #[Route('/history', name: 'status_history')]
-    public function history(
+    #[Route('/incidents', name: 'status_incidents')]
+    public function incidents(
         UptimeRobotClient $uptimeClient,
         CacheManager $cacheManager,
         DateFormatter $dateFormatter,
         SessionInterface $session
     ): Response {
+        $incidents = [];
         try {
             $incidents = $uptimeClient->getAllIncidentsWithLogs();
 
-            array_walk($incidents, function (&$incident) {
-                if (!isset($incident['logs']) || !is_array($incident['logs'])) {
-                    $incident['logs'] = [];
-                }
-            });
+            if (empty($incidents)) {
+                $this->addFlash('notice', 'No incidents reported.');
+            }
 
             $cacheGenerationDate = $cacheManager->getCacheGenerationDate('urapi_incidents_date');
             $userTimezone = $session->get('user_timezone', 'Europe/Paris');
@@ -61,13 +60,12 @@ class StatusController extends AbstractController
                 ? $dateFormatter->formatDateForDisplay($cacheGenerationDate, $userTimezone)
                 : null;
         } catch (\Exception $e) {
-            $this->addFlash('error', 'Erreur lors de la récupération des incidents.');
-            error_log('Erreur dans l\'action history: ' . $e->getMessage());
-            $incidents = [];
+            $this->addFlash('error', 'Error retrieving data from the API.');
+            error_log('Error in action history: ' . $e->getMessage());
             $formattedCacheDate = null;
         }
 
-        return $this->render('default/history.html.twig', [
+        return $this->render('default/incidents.html.twig', [
             'incidents' => $incidents,
             'cacheGenerationDate' => $formattedCacheDate,
         ]);

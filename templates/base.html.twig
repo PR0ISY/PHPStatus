@@ -21,13 +21,13 @@
                     <nav>
                         <ul class="flex space-x-8">
                             <li>
-                                <a href="/" title="Status" class="text-sm font-light text-dark-200 hover:text-white transition-colors nav-link">
+                                <a href="/" title="Status" class="text-sm font-light {{ app.request.attributes.get('_route') == 'status_homepage' ? 'text-white' : 'text-dark-200' }} hover:text-white transition-colors nav-link">
                                     Status
                                 </a>
                             </li>
                             <li>
-                                <a href="/history" title="History" class="text-sm font-light text-dark-200 hover:text-white transition-colors nav-link">
-                                    History
+                                <a href="/incidents" title="Incidents" class="text-sm font-light {{ app.request.attributes.get('_route') == 'status_incidents' ? 'text-white' : 'text-dark-200' }} hover:text-white transition-colors nav-link">
+                                    Incidents
                                 </a>
                             </li>
                         </ul>
