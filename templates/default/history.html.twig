@@ -6,9 +6,79 @@
 
 {% block body %}
     <div class="mb-10 text-center">
-        <h2 class="text-3xl font-light text-white mb-2">Incident History</h2>
-        <p class="text-dark-200 text-sm">Consult the complete history of incidents<!--, maintenance, etc...--></p>
+        <h2 class="text-3xl font-light text-white mb-2">Incidents History</h2>
+        <p class="text-dark-200 text-sm">View the last 10 incidents...</p>
+        <p class="text-dark-200 text-sm">Last updated at <span class="text-dark-100">{{ cacheGenerationDate ? cacheGenerationDate : 'N/A' }}</span></p>
     </div>
+
+    {% if incidents is not empty %}
+            {% for incident in incidents %}
+                {% if incident.logs|length > 0 %}
+                    {% set status = incident.status|default("Unknown")|monitor_status %}
+                    {% if incident.last_log is not null %}
+                        {% set lastStatus = incident.last_log.class|default("Unknown")|logs_status %}
+                        <div class="mb-12">
+                            <div class="mb-6">
+                                <div class="space-y-6"></div>
+                                <div class="relative pl-10">
+                                    <div class="timeline-line"></div>
+                                    <div class="timeline-dot {{ status.indicator }}"></div>
+                                    <div class="card rounded-xl p-5">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-dark-300 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <span class="text-xs text-dark-300">{{ incident.last_log.duration|default('Durée inconnue') }}</span>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-xs font-medium {{ lastStatus.text }} {{ lastStatus.bg }} px-2 py-0.5 rounded-full">
+                                                    {{ incident.friendly_name|default('Nom inconnu') }}
+                                                </span>
+                                                <span class="text-xs font-medium text-dark-300 bg-dark-600/50 px-2 py-0.5 rounded-full">ID #{{ incident.id }}</span>
+                                            </div>
+                                        </div>
+                                        <h4 class="text-base font-light text-white mb-2">
+                                            {{ incident.last_log.reason.detail.short|default('No title') }}
+                                        </h4>
+                                        {% if incident.last_log.reason.detail.full is defined %}
+                                            <p class="text-sm text-dark-200 font-light mb-4">
+                                                {{ incident.last_log.reason.detail.full|default('No description') }}
+                                            </p>
+                                        {% endif %}
+                                        <div class="border-t border-dark-600/30 pt-4 mt-2">
+                                            <div class="space-y-4">
+                                                {% for log in incident.logs %}
+                                                    <div class="flex items-start">
+                                                        <div>
+                                                            <span class="text-xs font-medium {{ log.class == 'danger' ? 'text-error-400' : 'text-success-400' }}">
+                                                                {{ log.label | upper }}
+                                                            </span>
+                                                            <p class="text-xs text-dark-200">
+                                                                {% if log.date %}
+                                                                    {{ log.date }}
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p>Aucun incident trouvé.</p>
+                {% endif %}
+            {% endfor %}
+    {% else %}
+        <p>Aucun incident trouvé.</p>
+    {% endif %}
+
 
     <!--<div class="mb-8">
         <div class="flex flex-wrap gap-2 justify-center">
@@ -23,56 +93,4 @@
             </button>
         </div>
     </div>-->
-
-    <div class="mb-12">
-        <div class="mb-6">
-            <div class="space-y-6"></div>
-            <div class="relative pl-10">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot bg-warning-500"></div>
-                <div class="card rounded-xl p-5">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs font-medium text-success-400 bg-success-500/10 px-2 py-0.5 rounded-full">(Status)</span>
-                            <span class="text-xs font-medium text-dark-300 bg-dark-600/50 px-2 py-0.5 rounded-full">(monitor name)</span>
-                        </div>
-                    </div>
-                    <h4 class="text-base font-light text-white mb-2">Problèmes de latence du stockage</h4>
-                    <p class="text-sm text-dark-200 font-light mb-4">Nous avons connu une latence plus élevée que la normale dans nos systèmes de stockage. Le problème a été résolu et tous les systèmes fonctionnent normalement.</p>
-
-                    <div class="border-t border-dark-600/30 pt-4 mt-2">
-                        <div class="space-y-3">
-                            <div class="flex">
-                                <div class="w-24 flex-shrink-0">
-                                    <span class="text-xs text-dark-300">14:35</span>
-                                </div>
-                                <div>
-                                    <span class="text-xs text-success-400 font-medium">Résolu</span>
-                                    <p class="text-xs text-dark-200">Tous les systèmes fonctionnent normalement.</p>
-                                </div>
-                            </div>
-                            <div class="flex">
-                                <div class="w-24 flex-shrink-0">
-                                    <span class="text-xs text-dark-300">13:42</span>
-                                </div>
-                                <div>
-                                    <span class="text-xs text-warning-400 font-medium">En cours</span>
-                                    <p class="text-xs text-dark-200">Nous avons identifié la cause et travaillons sur une solution.</p>
-                                </div>
-                            </div>
-                            <div class="flex">
-                                <div class="w-24 flex-shrink-0">
-                                    <span class="text-xs text-dark-300">13:15</span>
-                                </div>
-                                <div>
-                                    <span class="text-xs text-error-400 font-medium">Détecté</span>
-                                    <p class="text-xs text-dark-200">Nous enquêtons sur des problèmes de latence dans notre système de stockage.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock %}

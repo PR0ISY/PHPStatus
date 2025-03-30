@@ -27,4 +27,7 @@ services:
             $apiKey: '%env(UPTIME_ROBOT_API_KEY)%'
     App\Twig\UptimeRobotExtension:
         tags: [ 'twig.extension' ]
+    Symfony\Component\HttpFoundation\Session\SessionFactoryInterface:
+        '@session.factory'
+
 

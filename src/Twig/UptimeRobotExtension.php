@@ -10,9 +10,12 @@ class UptimeRobotExtension extends AbstractExtension
     {
         return [
             new TwigFilter('monitor_status', [$this, 'getMonitorStatus']),
+            new TwigFilter('logs_status', [$this, 'getLogsStatus']),
             new TwigFilter('monitor_type', [$this, 'getMonitorType']),
+            new TwigFilter('log_type', [$this, 'getLogType']),
             new TwigFilter('monitor_sub_type', [$this, 'getMonitorSubType']),
             new TwigFilter('global_status', [$this, 'getGlobalStatus']),
+            new TwigFilter('format_duration', [$this, 'formatDuration'])
         ];
     }
 
@@ -28,6 +31,15 @@ class UptimeRobotExtension extends AbstractExtension
         };
     }
 
+    public function getLogsStatus($status): array
+    {
+        return match ($status) {
+            "success" => ['bg' => 'bg-success-500/10', 'text' => 'text-success-400', 'indicator' => 'status-operational'],
+            "danger" => ['bg' => 'bg-error-500/10', 'text' => 'text-error-400', 'indicator' => 'status-offline'],
+            default => ['label' => 'Unknown', 'class' => 'text-dark-300', 'indicator' => 'status-unknown'],
+        };
+    }
+
     public function getMonitorType(int $type): string
     {
         return match ($type) {
@@ -36,6 +48,17 @@ class UptimeRobotExtension extends AbstractExtension
             3 => 'PING',
             4 => 'PORT',
             5 => 'HEARTBEAT',
+            default => 'UNKNOWN',
+        };
+    }
+
+    public function getLogType(int $type): string
+    {
+        return match ($type) {
+            1 => 'DOWN',
+            2 => 'UP',
+            99 => 'PAUSED',
+            98 => 'STARTED',
             default => 'UNKNOWN',
         };
     }
@@ -82,6 +105,49 @@ class UptimeRobotExtension extends AbstractExtension
         } else {
             return ['status' => 'operational', 'color' => 'text-success-400', 'message' => 'All Systems Operational'];
         }
+    }
+
+    public function formatDuration(int $seconds): string
+    {
+        $year = intdiv($seconds, 31536000);
+        $seconds %= 31536000;
+
+        $month = intdiv($seconds, 2592000);
+        $seconds %= 2592000;
+
+        $day = intdiv($seconds, 86400);
+        $seconds %= 86400;
+
+        $hour = intdiv($seconds, 3600);
+        $seconds %= 3600;
+
+        $minute = intdiv($seconds, 60);
+        $seconds %= 60;
+
+        $result = [];
+        if ($year > 0) {
+            $result[] = $year . ($year > 1 ? ' years' : ' year');
+        }
+        if ($month > 0) {
+            $result[] = $month . ($month > 1 ? ' months' : ' month');
+        }
+        if ($day > 0) {
+            $result[] = $day . ($day > 1 ? ' days' : ' day');
+        }
+        if ($hour > 0) {
+            $result[] = $hour . 'h';
+        }
+        if ($minute > 0) {
+            $result[] = $minute . 'min';
+        }
+        if ($seconds > 0) {
+            $result[] = $seconds . 's';
+        }
+        if ($seconds <= 0) {
+            return 'N/A';
+        }
+
+        return implode(' ', $result);
     }
 
 }
